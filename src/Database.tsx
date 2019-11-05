@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import * as idb from 'idb'
-import { IBAN, ReferenceNumber, IsoDateString } from './types'
+import { IBAN, ReferenceNumber } from './types'
 
 export interface Database extends idb.DBSchema {
   recipients: {

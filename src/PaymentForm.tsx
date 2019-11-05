@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useDatabase, Database } from './Database'
 import { preventingDefault } from './eventHelpers'
 import { IBAN, ReferenceNumber } from './types'
@@ -62,16 +62,16 @@ const PaymentForm: React.FC = () => {
     }
   }
 
-  const refreshRecipients = async () => {
+  const refreshRecipients = useCallback(async () => {
     if (!db) {
       return
     }
     setRecipients(await db.getAll('recipients'))
-  }
+  }, [db])
 
   useEffect(() => {
     refreshRecipients()
-  }, [db])
+  }, [refreshRecipients, db])
 
   return (
     <form>

@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
-import { DatabaseProvider, useDatabase, Database } from './Database'
+import { DatabaseProvider } from './Database'
 import NewRecipientForm from './NewRecipientForm'
 import PaymentForm from './PaymentForm'
 
