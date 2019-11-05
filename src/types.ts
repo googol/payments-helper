@@ -1,16 +1,11 @@
 import * as Rt from 'runtypes'
 
-const fiIbanRegex = /^FI(\d\d)(\d{13})(\d)$/
+export const fiIbanRegex = /^FI(\d\d)(\d{13})(\d)$/
 
 function validateFiRegex(input: string): boolean {
   const result = fiIbanRegex.exec(input)
   if (!result) {
-    return false
-  }
-
-  const [,checkBits, main, nationalCheckBit] = result
-  const checkString = main + nationalCheckBit + '1518' + checkBits
-  if (Number(checkString) % 97 !== 1) {
+    console.log('failed regex')
     return false
   }
 
@@ -30,7 +25,7 @@ export const parseIban = (input: string): IBAN | undefined => {
   }
 }
 
-const referenceNumberRegex = /^\d{4,20}$/
+export const referenceNumberRegex = /^\d{4,20}$/
 function validateReferenceNumber(input: string): boolean {
   return referenceNumberRegex.test(input)
 }

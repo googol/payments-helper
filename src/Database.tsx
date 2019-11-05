@@ -10,7 +10,6 @@ export interface Database extends idb.DBSchema {
       name: string
       iban: IBAN
       referenceNumber: ReferenceNumber
-      date: IsoDateString
     }
   }
 }

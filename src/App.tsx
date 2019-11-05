@@ -1,27 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { DatabaseProvider } from './Database'
+import { DatabaseProvider, useDatabase, Database } from './Database'
+import NewRecipientForm from './NewRecipientForm'
+import PaymentForm from './PaymentForm'
 
 const App: React.FC = () => {
+  const refreshRecipients = () => {}
   return (
     <DatabaseProvider>
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.tsx</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        <h1>Maksuapustaja</h1>
+        <PaymentForm />
       </div>
+      <NewRecipientForm onRecipientAdded={() => refreshRecipients()} />
     </DatabaseProvider>
   );
 }
