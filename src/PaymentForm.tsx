@@ -3,7 +3,7 @@ import { useDatabase, Database } from './Database'
 import { preventingDefault } from './eventHelpers'
 import { IBAN, ReferenceNumber } from './types'
 
-const paymentAmountRegex = /^(\d{1,6})([,\.](\d{0,2}))?$/
+export const paymentAmountRegex = /^(\d{1,6})([,\.](\d{0,2}))?$/
 
 function getAmountValues(input: string): { euros: string, cents: string } | undefined {
   const result = input.match(paymentAmountRegex)
@@ -16,9 +16,6 @@ function getAmountValues(input: string): { euros: string, cents: string } | unde
     cents,
   }
 }
-function regexToInputPattern(input: RegExp): string {
-  return input.toString().slice(1, -1)
-}
 function formatDate(date: Date): string {
   return [
     date.getFullYear().toString().slice(2),
@@ -28,8 +25,11 @@ function formatDate(date: Date): string {
   .join('')
 }
 
-const PaymentForm: React.FC = () => {
-  const [currentAmount, setCurrentAmount] = useState('0')
+type PaymentFormProps = Readonly<{
+  currentAmount: string
+}>
+
+const PaymentForm: React.FC<PaymentFormProps> = ({ currentAmount }) => {
   const [recipients, setRecipients] = useState<Database['recipients']['value'][]>([])
   const db = useDatabase()
 
@@ -41,8 +41,6 @@ const PaymentForm: React.FC = () => {
     }
 
     const { euros, cents } = amounts
-
-    console.log(euros, cents, iban, referenceNumber)
 
     return [
       '4',
@@ -74,16 +72,14 @@ const PaymentForm: React.FC = () => {
   }, [refreshRecipients, db])
 
   return (
-    <form>
-      <label>Amount: <input type="text" value={currentAmount} onChange={preventingDefault((e) => setCurrentAmount(e.target.value))} pattern={regexToInputPattern(paymentAmountRegex)} /></label>
-      <br />
+    <>
       { recipients.map((recipient) => (
-        <button type="button" onClick={preventingDefault(() => {writeBarcode(recipient)})}>
+        <button key={recipient.id} type="button" onClick={preventingDefault(() => {writeBarcode(recipient)})}>
           <h2>{recipient.name}</h2>
           <p>{recipient.iban}</p>
         </button>
       )) }
-    </form>
+    </>
   )
 }
 

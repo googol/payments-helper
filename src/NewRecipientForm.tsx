@@ -1,40 +1,38 @@
 import React, { useState } from 'react'
-import { IBAN, ReferenceNumber, fiIbanRegex, referenceNumberRegex } from './types'
+import { IBAN, ReferenceNumber, parseIban, parseReferenceNumber } from './types'
 import { preventingDefault } from './eventHelpers'
 import { useDatabase } from './Database'
 
-function regexToHtmlInputPattern(regex: RegExp): string {
-  return regex.toString().slice(1, -1)
-}
-
-interface Props {
+type Props = Readonly<{
   onRecipientAdded: () => void
-}
+}>
 
 const NewRecipientForm: React.FC<Props> = ({ onRecipientAdded }) => {
   const [name, setName] = useState('')
-  const [iban, setIban] = useState('')
+  const [iban, setIban] = useState('FI')
   const [referenceNumber, setReferenceNumber] = useState('')
 
   const db = useDatabase()
 
   const handleSubmit = () => {
-    console.log(db, iban, referenceNumber)
     if (!db) {
       return
     }
-    if (!IBAN.guard(iban)) {
+
+    const parsedIban = parseIban(iban)
+    if (!parsedIban) {
       console.log(iban)
       console.log('iban guard failed')
         return
     }
-    if (!ReferenceNumber.guard(referenceNumber)) {
+    const parsedReferenceNumber = parseReferenceNumber(referenceNumber)
+    if (!parsedReferenceNumber) {
       console.log('refnum guard failed')
       return
     }
-    db.add('recipients', { name, iban, referenceNumber })
+    db.add('recipients', { name, iban: parsedIban, referenceNumber: parsedReferenceNumber })
     setName('')
-    setIban('')
+    setIban('FI')
     setReferenceNumber('')
     onRecipientAdded()
   }
@@ -44,8 +42,8 @@ const NewRecipientForm: React.FC<Props> = ({ onRecipientAdded }) => {
       <h2>Uusi maksunsaaaja</h2>
       <form onSubmit={preventingDefault(handleSubmit)}>
         <label>Nimi: <input type="text" value={name} onChange={(e) => setName(e.target.value)} /></label>
-        <label>IBAN: <input type="text" value={iban} onChange={(e) => setIban(e.target.value)} pattern={regexToHtmlInputPattern(fiIbanRegex)} /></label>
-        <label>Viitenumero: <input type="text" value={referenceNumber} onChange={(e) => setReferenceNumber(e.target.value)} pattern={regexToHtmlInputPattern(referenceNumberRegex)} /></label>
+        <label>IBAN: <input type="text" inputMode="numeric" value={iban} onChange={(e) => setIban(e.target.value)} pattern="^\s*FI(\s*\d){16}\s*$" /></label>
+        <label>Viitenumero: <input type="text" inputMode="numeric" value={referenceNumber} onChange={(e) => setReferenceNumber(e.target.value)} pattern="^(\s*\d){4,20}\s*$" /></label>
         <button type="submit">Tallenna saaja</button>
       </form>
     </div>
